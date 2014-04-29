@@ -1,4 +1,3 @@
-
 # File Watch
 
 Super simple file watcher.
@@ -13,7 +12,7 @@ var Watcher = require('file-watch')
 
 var watcher = new Watcher()
 
-watcher.add('custom event', [
+watcher.watch('custom event', [
   'file1.txt',
   'file2.txt',
 ])
