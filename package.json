@@ -11,7 +11,9 @@
   "license": "MIT",
   "repository": "fs-utils/file-watch",
   "dependencies": {
-    "debug": "*"
+    "debug": "*",
+    "exclude": "1",
+    "array-equal": "1"
   },
   "devDependencies": {
     "mocha": "^1.17",

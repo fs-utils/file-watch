@@ -2,6 +2,8 @@
 var EventEmitter = require('events').EventEmitter
 var debug = require('debug')('file-watch')
 var inherits = require('util').inherits
+var equal = require('array-equal')
+var exclude = require('exclude')
 var watch = require('fs').watch
 
 module.exports = Watcher
@@ -26,6 +28,7 @@ Watcher.prototype.watch = function (name, files) {
   var onerror = this.onerror
   var watchers = this.watchers
 
+  // create a watcher for this file if not already
   files.forEach(function (filename) {
     // already watching
     if (watchers[filename]) return
@@ -35,16 +38,19 @@ Watcher.prototype.watch = function (name, files) {
     }, onChange).on('error', onerror)
   })
 
-  if (map[name]) {
-    var older = map[name]
+  var older = map[name]
+  if (older && !equal(files, older)) {
     delete map[name]
     var names = Object.keys(map)
-    difference(files, older).forEach(function (filename) {
+    debug('diffing %s against %s', files.join(', '), older.join(', '))
+    // remove files that we no longer care for
+    exclude(older, files).forEach(function (filename) {
       // still has listeners, ignore
       for (var i = 0; i < names.length; i++)
         if (~map[names[i]].indexOf(filename))
           return
 
+      debug('unwatching %s', filename)
       // no more listeners, so just close it
       watchers[filename].close()
       delete watchers[filename]
@@ -75,14 +81,4 @@ Watcher.prototype.destroy = function () {
 
 Watcher.prototype.onerror = function (err) {
   if (err) this.emit('error', err)
-}
-
-// external module for this?
-function difference(newer, older) {
-  var buf = older.slice()
-  newer.forEach(function (thing) {
-    var index = older.indexOf(thing)
-    if (~index) older.splice(index, 1)
-  })
-  return buf
 }
