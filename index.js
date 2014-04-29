@@ -42,7 +42,7 @@ Watcher.prototype.watch = function (name, files) {
     difference(files, older).forEach(function (filename) {
       // still has listeners, ignore
       for (var i = 0; i < names.length; i++)
-        if (~map[name].indexOf(filename))
+        if (~map[names[i]].indexOf(filename))
           return
 
       // no more listeners, so just close it
