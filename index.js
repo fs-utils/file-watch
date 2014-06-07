@@ -33,15 +33,21 @@ Watcher.prototype.watch = function (name, files) {
     // already watching
     if (watchers[filename]) return
     // watch the file
-    watchers[filename] = watch(filename, {
-      persistent: true
-    }, function (event) {
-      // filename is not guaranteed to be emitted with fs.watch,
-      // so we make sure to emit `filename` ourselves.
-      debug('%s: %s', event, filename)
-      // how to handle rename?
-      self.emit(name, filename)
-    }).on('error', onerror)
+    addWatcher()
+    function addWatcher() {
+      watchers[filename] = watch(filename, {
+        persistent: true
+      }, function (event) {
+        // filename is not guaranteed to be emitted with fs.watch,
+        // so we make sure to emit `filename` ourselves.
+        debug('%s: %s', event, filename)
+        self.emit(name, filename)
+        if (event === 'rename') {
+          watchers[filename].close()
+          addWatcher()
+        }
+      }).on('error', onerror)
+    }
   })
 
   var older = map[name]
