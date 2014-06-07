@@ -12,7 +12,7 @@ it('should watch', function (done) {
   watcher.map.files.length.should.equal(4)
 
   watcher.once('files', function (filename) {
-    filename.should.equal(path.basename(fixture(1)))
+    path.basename(filename).should.equal(path.basename(fixture(1)))
     done()
   })
 
@@ -24,9 +24,9 @@ it('should watch', function (done) {
 
 it('should unwatch when replaced', function (done) {
   watcher.watch('files', [1, 2, 3].map(fixture))
-  assert(!watcher.watchers[fixture[4]])
+  assert(!watcher.watchers[fixture(4)])
 
-  watcher.once('4.js', function () {
+  watcher.once('files', function () {
     done(new Error())
   })
 
