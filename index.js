@@ -5,6 +5,7 @@ var inherits = require('util').inherits
 var equal = require('array-equal')
 var exclude = require('exclude')
 var watch = require('fs').watch
+var exists = require('fs').existsSync
 
 module.exports = Watcher
 
@@ -35,6 +36,7 @@ Watcher.prototype.watch = function (name, files) {
     // watch the file
     addWatcher()
     function addWatcher() {
+      if (!exists(filename)) return
       watchers[filename] = watch(filename, {
         persistent: true
       }, function (event) {
@@ -44,6 +46,7 @@ Watcher.prototype.watch = function (name, files) {
         self.emit(name, filename)
         if (event === 'rename') {
           watchers[filename].close()
+          delete watchers[filename]
           addWatcher()
         }
       }).on('error', onerror)

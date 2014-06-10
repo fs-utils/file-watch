@@ -36,6 +36,32 @@ it('should unwatch when replaced', function (done) {
   })
 })
 
+describe('renaming', function () {
+  var name = fixture(5)
+  beforeEach(function () {
+    fs.writeFileSync(name, 'foobar')
+  })
+  afterEach(function () {
+    if (fs.existsSync(name))
+      fs.unlinkSync(name)
+  })
+  it('should re-watch when overwritten', function (done) {
+    watcher.watch('files2', [name])
+    watcher.once('files2', function () {
+      watcher.once('files2', function () { done() })
+      update(5)
+    })
+    var name2 = fixture(6)
+    fs.writeFileSync(name2, 'foobar2')
+    fs.renameSync(name2, name)
+  })
+  it('should not throw when really removing/renaming file', function (done) {
+    watcher.watch('files2', [name])
+    watcher.once('files2', function () { done() })
+    fs.unlinkSync(name)
+  })
+})
+
 function update(number) {
   fs.utimesSync(fixture(number), new Date(), new Date())
 }
