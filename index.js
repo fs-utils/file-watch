@@ -35,8 +35,10 @@ Watcher.prototype.watch = function (name, files) {
     if (watchers[filename]) return
     // watch the file
     addWatcher()
+
     function addWatcher() {
-      if (!exists(filename)) return
+      if (!exists(filename)) return debug('%s does not exist', filename)
+
       watchers[filename] = watch(filename, {
         persistent: true
       }, function (event) {
@@ -44,12 +46,17 @@ Watcher.prototype.watch = function (name, files) {
         // so we make sure to emit `filename` ourselves.
         debug('%s: %s', event, filename)
         self.emit(name, filename)
-        if (event === 'rename') {
-          watchers[filename].close()
-          delete watchers[filename]
-          addWatcher()
-        }
-      }).on('error', onerror)
+        if (event === 'rename') readdWatcher()
+      }).on('error', function (err) {
+        onerror(err)
+        readdWatcher()
+      })
+    }
+
+    function readdWatcher() {
+      watchers[filename].close()
+      delete watchers[filename]
+      addWatcher()
     }
   })
 
