@@ -41,10 +41,12 @@ describe('renaming', function () {
   beforeEach(function () {
     fs.writeFileSync(name, 'foobar')
   })
+
   afterEach(function () {
     if (fs.existsSync(name))
       fs.unlinkSync(name)
   })
+
   it('should re-watch when overwritten', function (done) {
     watcher.watch('files2', [name])
     watcher.once('files2', function () {
@@ -55,6 +57,7 @@ describe('renaming', function () {
     fs.writeFileSync(name2, 'foobar2')
     fs.renameSync(name2, name)
   })
+
   it('should not throw when really removing/renaming file', function (done) {
     watcher.watch('files2', [name])
     watcher.once('files2', function () { done() })
