@@ -1,7 +1,7 @@
 {
   "name": "file-watch",
   "description": "watch very specific files",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": {
     "name": "Jonathan Ong",
     "email": "me@jongleberry.com",
