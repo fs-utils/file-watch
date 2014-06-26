@@ -22,6 +22,20 @@ it('should watch', function (done) {
   })
 })
 
+it('should emit `change` on any changes', function (done) {
+  watcher.watch('files', [1, 2, 3, 4].map(fixture))
+
+  watcher.once('change', function (filename) {
+    path.basename(filename).should.equal(path.basename(fixture(1)))
+    done()
+  })
+
+  // why i must do this, i do not know.
+  setImmediate(function () {
+    update(1)
+  })
+})
+
 it('should unwatch when replaced', function (done) {
   watcher.watch('files', [1, 2, 3].map(fixture))
   assert(!watcher.watchers[fixture(4)])

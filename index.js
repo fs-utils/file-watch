@@ -46,6 +46,7 @@ Watcher.prototype.watch = function (name, files) {
         // so we make sure to emit `filename` ourselves.
         debug('%s: %s', event, filename)
         self.emit(name, filename)
+        self.emit('change', filename)
         if (event === 'rename') readdWatcher()
       }).on('error', function (err) {
         onerror(err)
