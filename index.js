@@ -20,6 +20,8 @@ function Watcher() {
   this.map = {}
   // filename -> watcher lookup
   this.watchers = {}
+  // variable for fixin problem with Windows with double fire
+  this.lastFire=[null,'',0];
 }
 
 Watcher.prototype.watch = function (name, files) {
@@ -42,6 +44,9 @@ Watcher.prototype.watch = function (name, files) {
       watchers[filename] = watch(filename, {
         persistent: true
       }, function (event) {
+        // Catch event clone
+        if (self.lastFire[0]===event[0]&&self.lastFire[1]===event[1]&&(new Date())-self.lastFire[2]<20) return; 
+        self.lastFire=[event[0],event[1],new Date()];
         // filename is not guaranteed to be emitted with fs.watch,
         // so we make sure to emit `filename` ourselves.
         debug('%s: %s', event, filename)
